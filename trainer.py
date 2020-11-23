@@ -1,10 +1,10 @@
 import torch
-import time, random, cv2, sys 
+import time, random, cv2, sys
 from math import ceil
 import numpy as np
 from itertools import cycle
 import torch.nn.functional as F
-from torchvision.utils import make_grid
+from torchvision.utils import make_grid,save_image
 from torchvision import transforms
 from base import BaseTrainer
 from utils.helpers import colorize_mask
@@ -19,7 +19,7 @@ class Trainer(BaseTrainer):
     def __init__(self, model, resume, config, supervised_loader, unsupervised_loader, iter_per_epoch,
                 val_loader=None, train_logger=None):
         super(Trainer, self).__init__(model, resume, config, iter_per_epoch, train_logger)
-        
+
         self.supervised_loader = supervised_loader
         self.unsupervised_loader = unsupervised_loader
         self.val_loader = val_loader
@@ -47,7 +47,7 @@ class Trainer(BaseTrainer):
 
     def _train_epoch(self, epoch):
         self.html_results.save()
-        
+
         self.logger.info('\n')
         self.model.train()
 
@@ -66,6 +66,25 @@ class Trainer(BaseTrainer):
                 (input_l, target_l), (input_ul, target_ul) = next(dataloader)
                 input_ul, target_ul = input_ul.cuda(non_blocking=True), target_ul.cuda(non_blocking=True)
 
+            print('input_l: {}'.format(input_l.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            print('input_ul: {}'.format(input_ul.shape))
+            save_image(input_l,'input_l.png')
+            save_image(input_ul,'input_ul.png')
             input_l, target_l = input_l.cuda(non_blocking=True), target_l.cuda(non_blocking=True)
             self.optimizer.zero_grad()
 
@@ -78,7 +97,7 @@ class Trainer(BaseTrainer):
             self._update_losses(cur_losses)
             self._compute_metrics(outputs, target_l, target_ul, epoch-1)
             logs = self._log_values(cur_losses)
-            
+
             if batch_idx % self.log_step == 0:
                 self.wrt_step = (epoch - 1) * len(self.unsupervised_loader) + batch_idx
                 self._write_scalars_tb(logs)
@@ -88,7 +107,7 @@ class Trainer(BaseTrainer):
 
             del input_l, target_l, input_ul, target_ul
             del total_loss, cur_losses, outputs
-            
+
             tbar.set_description('T ({}) | Ls {:.2f} Lu {:.2f} Lw {:.2f} PW {:.2f} m1 {:.2f} m2 {:.2f}|'.format(
                 epoch, self.loss_sup.average, self.loss_unsup.average, self.loss_weakly.average,
                 self.pair_wise.average, self.mIoU_l, self.mIoU_ul))
@@ -154,7 +173,7 @@ class Trainer(BaseTrainer):
             # METRICS TO TENSORBOARD
             self.wrt_step = (epoch) * len(self.val_loader)
             self.writer.add_scalar(f'{self.wrt_mode}/loss', total_loss_val.average, self.wrt_step)
-            for k, v in list(seg_metrics.items())[:-1]: 
+            for k, v in list(seg_metrics.items())[:-1]:
                 self.writer.add_scalar(f'{self.wrt_mode}/{k}', v, self.wrt_step)
 
             log = {
@@ -208,7 +227,7 @@ class Trainer(BaseTrainer):
             self._update_seg_metrics(*seg_metrics_ul, False)
             seg_metrics_ul = self._get_seg_metrics(False)
             self.pixel_acc_ul, self.mIoU_ul, self.class_iou_ul = seg_metrics_ul.values()
-            
+
 
 
     def _update_seg_metrics(self, correct, labeled, inter, union, supervised=True):
@@ -274,7 +293,7 @@ class Trainer(BaseTrainer):
         val_img = []
         palette = self.val_loader.dataset.palette
         for imgs in val_visual:
-            imgs = [self.restore_transform(i) if (isinstance(i, torch.Tensor) and len(i.shape) == 3) 
+            imgs = [self.restore_transform(i) if (isinstance(i, torch.Tensor) and len(i.shape) == 3)
                         else colorize_mask(i, palette) for i in imgs]
             imgs = [i.convert('RGB') for i in imgs]
             imgs = [self.viz_transform(i) for i in imgs]

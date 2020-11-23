@@ -12,7 +12,7 @@ from math import ceil
 class BaseDataSet(Dataset):
     def __init__(self, data_dir, split, mean, std, ignore_index, base_size=None, augment=True, val=False,
                 jitter=False, use_weak_lables=False, weak_labels_output=None, crop_size=None, scale=False, flip=False, rotate=False,
-                blur=False, return_id=False, n_labeled_examples=None):
+                blur=False, return_id=False, n_labeled_examples=None,*args,**kwargs):
 
         self.root = data_dir
         self.split = split
@@ -48,7 +48,7 @@ class BaseDataSet(Dataset):
 
     def _set_files(self):
         raise NotImplementedError
-    
+
     def _load_data(self, index):
         raise NotImplementedError
 
@@ -60,14 +60,14 @@ class BaseDataSet(Dataset):
         rot_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
         image = cv2.warpAffine(image, rot_matrix, (w, h), flags=cv2.INTER_CUBIC)#, borderMode=cv2.BORDER_REFLECT)
         label = cv2.warpAffine(label, rot_matrix, (w, h), flags=cv2.INTER_NEAREST)#,  borderMode=cv2.BORDER_REFLECT)
-        return image, label            
+        return image, label
 
-    def _crop(self, image, label):   
+    def _crop(self, image, label):
         # Padding to return the correct crop size
         if (isinstance(self.crop_size, list) or isinstance(self.crop_size, tuple)) and len(self.crop_size) == 2:
-            crop_h, crop_w = self.crop_size 
+            crop_h, crop_w = self.crop_size
         elif isinstance(self.crop_size, int):
-            crop_h, crop_w = self.crop_size, self.crop_size 
+            crop_h, crop_w = self.crop_size, self.crop_size
         else:
             raise ValueError
 
@@ -84,7 +84,7 @@ class BaseDataSet(Dataset):
             image = cv2.copyMakeBorder(image, value=self.image_padding, **pad_kwargs)
             label = cv2.copyMakeBorder(label, value=self.ignore_index, **pad_kwargs)
 
-        # Cropping 
+        # Cropping
         h, w, _ = image.shape
         start_h = random.randint(0, h - crop_h)
         start_w = random.randint(0, w - crop_w)
@@ -162,13 +162,13 @@ class BaseDataSet(Dataset):
             image, label = self._flip(image, label)
 
         image = Image.fromarray(np.uint8(image))
-        image = self.jitter_tf(image) if self.jitter else image    
-        
+        image = self.jitter_tf(image) if self.jitter else image
+
         return self.normalize(self.to_tensor(image)), label
 
     def __len__(self):
         return len(self.files)
-  
+
     def __getitem__(self, index):
         image, label, image_id =  self._load_data(index)
         if self.val:

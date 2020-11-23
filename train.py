@@ -9,10 +9,10 @@ from utils import Logger
 from trainer import Trainer
 import torch.nn.functional as F
 from utils.losses import abCE_loss, CE_loss, consistency_weight, FocalLoss, softmax_helper, get_alpha
-
+from dataloaders.mulitview import MVB
 
 def get_instance(module, name, config, *args):
-    # GET THE CORRESPONDING CLASS / FCT 
+    # GET THE CORRESPONDING CLASS / FCT
     return getattr(module, config[name]['type'])(*args, **config[name]['args'])
 
 def main(config, resume):
@@ -23,9 +23,16 @@ def main(config, resume):
     config['train_supervised']['n_labeled_examples'] = config['n_labeled_examples']
     config['train_unsupervised']['n_labeled_examples'] = config['n_labeled_examples']
     config['train_unsupervised']['use_weak_lables'] = config['use_weak_lables']
-    supervised_loader = dataloaders.VOC(config['train_supervised'])
-    unsupervised_loader = dataloaders.VOC(config['train_unsupervised'])
-    val_loader = dataloaders.VOC(config['val_loader'])
+
+    # supervised_loader = dataloaders.VOC(config['train_supervised'])
+    # unsupervised_loader = dataloaders.VOC(config['train_unsupervised'])
+
+    supervised_loader = MVB(config['train_supervised'])
+    unsupervised_loader = MVB(config['train_unsupervised'])
+
+    val_loader = MVB(config['val_loader'])
+
+
     iter_per_epoch = len(unsupervised_loader)
 
     # SUPERVISED LOSS

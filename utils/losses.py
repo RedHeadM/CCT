@@ -110,7 +110,7 @@ class FocalLoss(nn.Module):
             logit = logit.view(-1, logit.size(-1))
         target = torch.squeeze(target, 1)
         target = target.view(-1, 1)
-	
+
         alpha = self.alpha
 
         if alpha is None:
@@ -119,7 +119,7 @@ class FocalLoss(nn.Module):
             assert len(alpha) == num_class
             alpha = torch.FloatTensor(alpha).view(num_class, 1)
             alpha = alpha / alpha.sum()
-	    alpha = 1/alpha # inverse of class frequency
+            alpha = 1/alpha # inverse of class frequency
         elif isinstance(alpha, float):
             alpha = torch.ones(num_class, 1)
             alpha = alpha * (1 - self.alpha)
@@ -127,17 +127,17 @@ class FocalLoss(nn.Module):
 
         else:
             raise TypeError('Not support alpha type')
-        
+
         if alpha.device != logit.device:
             alpha = alpha.to(logit.device)
 
         idx = target.cpu().long()
 
         one_hot_key = torch.FloatTensor(target.size(0), num_class).zero_()
-	
+
 	# to resolve error in idx in scatter_
-	idx[idx==225]=0
-        
+        idx[idx==225]=0
+
         one_hot_key = one_hot_key.scatter_(1, idx, 1)
         if one_hot_key.device != logit.device:
             one_hot_key = one_hot_key.to(logit.device)
@@ -173,7 +173,7 @@ class abCE_loss(nn.Module):
         self.thresh = thresh
         self.min_kept = min_kept
         self.ramp_type = ramp_type
-        
+
         if ramp_type is not None:
             self.rampup_func = getattr(ramps, ramp_type)
             self.iters_per_epoch = iters_per_epoch
@@ -241,7 +241,7 @@ def softmax_kl_loss(inputs, targets, conf_mask=False, threshold=None, use_softma
     input_log_softmax = F.log_softmax(inputs, dim=1)
     if use_softmax:
         targets = F.softmax(targets, dim=1)
-    
+
     if conf_mask:
         loss_mat = F.kl_div(input_log_softmax, targets, reduction='none')
         mask = (targets.max(1)[0] > threshold)
