@@ -57,7 +57,7 @@
 
 
     "train_supervised": {
-        "data_dir": "/media/markus/DATA/mutil_tex_3p/texture_multibot_push_left10040/videos/train/",
+        "data_dir": "/tmp/texture_multibot_push_left10030/videos/train",
         "batch_size": 10,
         "view_idx": 0,
         "number_views": 1,
@@ -74,7 +74,7 @@
     },
 
     "train_unsupervised": {
-        "data_dir": "/media/markus/DATA/mutil_tex_3p/texture_multibot_push_left10040/videos/train/",
+        "data_dir": "/tmp/texture_multibot_push_left10030/videos/train",
         "view_idx": 0,
         "number_views": 1,
         "weak_labels_output": "pseudo_labels/result/pseudo_labels",
@@ -92,7 +92,7 @@
     },
 
     "val_loader": {
-        "data_dir":"/media/markus/DATA/mutil_tex_3p/texture_multibot_push_left10040/videos/val/",
+        "data_dir": "/tmp/texture_multibot_push_left10030/videos/train",
         "view_idx": 0,
         "number_views": 1,
         "batch_size": 1,
