@@ -1,7 +1,7 @@
 {
     "name": "CCT",
     "experim_name": "CCT",
-    "n_gpu": 1,
+    "n_gpu": 2,
     "n_labeled_examples": 1464,
     "diff_lrs": true,
     "ramp_up": 0.1,
@@ -57,11 +57,11 @@
 
 
     "train_supervised": {
-        "data_dir": "/tmp/texture_multibot_push_left10030/videos/train",
+        "data_dir": "/tmp/texture_multibot_push_left10030/videos/val",
         "batch_size": 10,
         "view_idx": 0,
         "number_views": 1,
-        "crop_size": 320,
+        "crop_size": 256,
         "shuffle": true,
         "base_size": 300,
         "scale": true,
@@ -74,9 +74,9 @@
     },
 
     "train_unsupervised": {
-        "data_dir": "/tmp/texture_multibot_push_left10030/videos/train",
-        "view_idx": 0,
-        "number_views": 1,
+        "data_dir": "/tmp/texture_multibot_push_left10030/videos/val",
+        "view_idx": 1,
+        "number_views": 2,
         "weak_labels_output": "pseudo_labels/result/pseudo_labels",
         "batch_size": 10,
         "crop_size": 256,
@@ -92,9 +92,9 @@
     },
 
     "val_loader": {
-        "data_dir": "/tmp/texture_multibot_push_left10030/videos/train",
-        "view_idx": 0,
-        "number_views": 1,
+        "data_dir": "/tmp/texture_multibot_push_left10030/videos/val",
+        "view_idx": 1,
+        "number_views": 2,
         "batch_size": 1,
         "val": true,
         "split": "val",
